@@ -1,0 +1,100 @@
+﻿@model BookManagementViewModel
+
+<body>
+    <div class="main">
+        <form asp-action="SearchBook" asp-controller="Home" asp-antiforgery="true">
+            <input class="form__input" name="search" value="@ViewBag.Search" placeholder="Найти книгу" /><br />
+            <input type="submit" value="Найти" class="btn" />
+        </form>
+        <a asp-action="Book" asp-controller="Home" class="btn">Очистить поиск</a>
+        <table items="Model.Books" id-update-modal="updateBookModal"
+               columns="@(new List<TableColumn>
+                                 {
+                                      new() {Title = "Название", Property = "Title"},
+                                      new() {Title = "Авторы", Property = "Authors"},
+                                      new() {Title = "Год издания", Property = "YearOfPublication"},
+                                      new() {Title = "Количество", Property = "Quantity"}
+                                 })" class="table">
+        </table>
+        <dialog id="updateBookModal" class="update_modal">
+            <form asp-action="Book" asp-controller="Home" asp-antiforgery="true" class="form">
+                <div class="form__body">
+                    <div class="form__signature">
+                        <label hidden asp-for="Book.Id">Id</label>
+                        <input hidden type="text" asp-for="Book.Id" id="updateBookId" class="form__input" />
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Book.Title">Название</label><br />
+                        <input type="text" asp-for="Book.Title" id="updateBookTitle" class="form__input" maxlength="255" />
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Book.AuthorsId">Авторы</label><br />
+                        <small>Для выбора нескольких авторов зажмите ctrl и нажмите на них</small><br />
+                        <select asp-for="Book.AuthorsId" asp-items='@new SelectList(Model.Authors, "Id", "Name")' id="updateBookAuthors" multiple class="form__select"></select>
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Book.YearOfPublication">Год издания</label><br />
+                        <input asp-for="Book.YearOfPublication" class="form__input" id="updateBookYear" />
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Book.Quantity">Количество</label><br />
+                        <input asp-for="Book.Quantity" class="form__input" id="updateBookQuantity" />
+                    </div>
+                    <p>
+                        <input type="submit" value="Обновить книгу" class="btn-submit" />
+                    </p>
+                    <p>
+                        <input type="button" value="Удалить книгу" id="deleteBookButton" class="btn-submit" />
+                    </p>
+                    <p>
+                        <input type="button" value="Выдать книгу" id="issueBookButton" class="btn-submit" />
+                    </p>
+                    <p>
+                        <input type="button" value="Вернуть книгу" id="returnBookButton" class="btn-submit" />
+                    </p>
+                </div>
+                <img src="~/close.png" alt="Close" id="closeUpdateButton" class="close_button" />
+            </form>
+            <form id="deleteForm" asp-action="Book" asp-controller="Home" hidden>
+                <input type="hidden" name="id" id="deleteBookId" />
+            </form>
+            <form id="issueForm" asp-action="IssueBook" asp-controller="Home" asp-antiforgery="true" hidden>
+                <input type="hidden" name="id" id="issueBookId" />
+            </form>
+            <form id="returnForm" asp-action="ReturnBook" asp-controller="Home" asp-antiforgery="true" hidden>
+                <input type="hidden" name="id" id="returnBookId" />
+            </form>
+        </dialog>
+        <button type="button" id="openCreateBookModal" class="btn"><span>Создать Книгу</span></button>
+        <dialog id="createBookModal" class="create_modal">
+            <form asp-action="Book" asp-controller="Home" asp-antiforgery="true" id="createBookForm" class="form">
+                <div class="form__body">
+                    <div class="form__signature">
+                        <label asp-for="Book.Title">Название</label><br />
+                        <input type="text" asp-for="Book.Title" class="form__input" maxlength="255" />
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Book.AuthorsId">Авторы</label><br />
+                        <small>Для выбора нескольких авторов зажмите ctrl и нажмите на них</small><br />
+                        <select asp-for="Book.AuthorsId" asp-items='@new SelectList(Model.Authors, "Id", "Name")' multiple class="form__select"></select>
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Book.YearOfPublication">Год издания</label><br />
+                        <input asp-for="Book.YearOfPublication" class="form__input" />
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Book.Quantity">Количество</label><br />
+                        <input asp-for="Book.Quantity" class="form__input" />
+                    </div>
+                    <p>
+                        <input type="submit" value="Создать книгу" class="btn-submit" />
+                    </p>
+                </div>
+                <img src="~/close.png" alt="Close" id="closeCreateButton" class="close_button" />
+            </form>
+        </dialog>
+    </div>
+    <script src="~/js/BookPageLogic.js">
+
+    </script>
+</body>

@@ -1,0 +1,79 @@
+﻿@model AuthorManagementViewModel
+
+<body>
+    <div class="main">
+        <form asp-action="SearchAuthor" asp-controller="Home" asp-antiforgery="true">
+            <input class="form__input" name="search" value="@ViewBag.Search" placeholder="Найти автора" /><br />
+            <input type="submit" value="Найти" class="btn" />
+        </form>
+        <a asp-action="Author" asp-controller="Home" class="btn">Очистить поиск</a>
+        <table items="Model.Authors" id-update-modal="updateAuthorModal"
+               columns="@(new List<TableColumn>
+                                        {
+                                             new() {Title = "Имя", Property = "Name"},
+                                             new() {Title = "Описание", Property = "Description"},
+                                             new() {Title = "Книги", Property = "Books"},
+                                        })" class="table">
+        </table>
+        <dialog id="updateAuthorModal" class="update_modal">
+            <form asp-action="Author" asp-controller="Home" asp-antiforgery="true" class="form">
+                <div class="form__body">
+                    <div class="form__signature">
+                        <label hidden asp-for="Author.Id">Id</label>
+                        <input hidden type="text" asp-for="Author.Id" id="updateAuthorId" class="form__input" />
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Author.Name">Имя</label><br />
+                        <input type="text" asp-for="Author.Name" id="updateAuthorName" class="form__input" maxlength="255" />
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Author.Description">Описание</label><br />
+                        <textarea asp-for="Author.Description" id="updateAuthorDescription" class="form__input"></textarea>
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Author.BooksId">Книги</label><br />
+                        <small>Для выбора нескольких книг зажмите ctrl и нажмите на них</small><br />
+                        <select asp-for="Author.BooksId" asp-items='@new SelectList(Model.Books, "Id", "Title")' id="updateAuthorBooks" multiple class="form__select"></select>
+                    </div>
+                    <p>
+                        <input type="submit" value="Обновить автора" class="btn-submit" />
+                    </p>
+                    <p>
+                        <input type="button" value="Удалить автора" id="deleteAuthorButton" class="btn-submit" />
+                    </p>
+                </div>
+                <img src="~/close.png" alt="Close" id="closeUpdateButton" class="close_button" />
+            </form>
+            <form id="deleteForm" asp-action="Author" asp-controller="Home" method="post" hidden>
+                <input type="hidden" name="id" id="deleteAuthorId" />
+            </form>
+        </dialog>
+        <button type="button" id="openCreateAuthorModal" class="btn"><span>Создать Автора</span></button>
+        <dialog id="createAuthorModal" class="create_modal">
+            <form asp-action="Author" asp-controller="Home" asp-antiforgery="true" id="createAuthorForm" class="form">
+                <div class="form__body">
+                    <div class="form__signature">
+                        <label asp-for="Author.Name">Имя</label><br>
+                        <input type="text" asp-for="Author.Name" class="form__input" maxlength="255" />
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Author.Description">Описание</label><br>
+                        <textarea asp-for="Author.Description" class="form__input"></textarea>
+                    </div>
+                    <div class="form__signature">
+                        <label asp-for="Author.BooksId">Книги</label><br />
+                        <small>Для выбора нескольких книг зажмите ctrl и нажмите на них</small><br />
+                        <select asp-for="Author.BooksId" asp-items='@new SelectList(Model.Books, "Id", "Title")' multiple class="form__select"></select>
+                    </div>
+                    <p>
+                        <input type="submit" value="Создать автора" class="btn-submit" />
+                    </p>
+                </div>
+                <img src="~/close.png" alt="Close" id="closeCreateButton" class="close_button" />
+            </form>
+        </dialog>
+    </div>
+    <script src="~/js/AuthorPageLogic.js">
+
+    </script>
+</body>

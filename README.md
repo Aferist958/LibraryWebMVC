@@ -9,12 +9,12 @@
 Шаги:
 
 1. Клонируем репозиторий
-   ```
+    ```
    git clone https://github.com/Aferist958/LibraryWebMVC.git
    ```
 2. Запуск
-   Для запуска должен быть включён Docker Desktop
-   ```
+    Для запуска должен быть включён Docker Desktop
+    ```
    cd .\LibraryWebMVC\
    docker-compose up 
    ```

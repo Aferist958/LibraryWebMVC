@@ -1,10 +1,7 @@
 ﻿using Library.Application.Interfaces.Services;
 using Library.Application.DTOs;
 using Library.Domain.Entities;
-using Library.Domain.Interafaces;
-using Library.Domain.Interafaces.Repositories;
-using Library.Infrastructure.Data.Context;
-using Microsoft.EntityFrameworkCore;
+using Library.Domain.Interfaces.Repositories;
 using AutoMapper;
 
 namespace Library.Application.Services

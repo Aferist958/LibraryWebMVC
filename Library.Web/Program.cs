@@ -1,4 +1,4 @@
-using Library.Domain.Interafaces.Repositories;
+using Library.Domain.Interfaces.Repositories;
 using Library.Infrastructure.Data.Repositories;
 using Library.Infrastructure.Data.Context;
 using Library.Application.Services;

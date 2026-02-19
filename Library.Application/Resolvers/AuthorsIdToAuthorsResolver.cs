@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Library.Application.DTOs;
 using Library.Domain.Entities;
-using Library.Domain.Interafaces.Repositories;
+using Library.Domain.Interfaces.Repositories;
 
 namespace Library.Application.Resolvers
 {

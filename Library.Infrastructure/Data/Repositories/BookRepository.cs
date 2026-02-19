@@ -1,59 +1,67 @@
 ﻿using Library.Domain.Entities;
-using Library.Domain.Interafaces.Repositories;
+using Library.Domain.Interfaces.Repositories;
 using Library.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace Library.Infrastructure.Data.Repositories
+namespace Library.Infrastructure.Data.Repositories 
 {
-    public class BookRepository : IBookRepository
+    public class BookRepository : IBookRepository 
     {
-        private readonly AppDbContext _dbContext;
+        private readonly AppDbContext _dbContext; 
 
-        public BookRepository(AppDbContext dbContext)
+        public BookRepository(AppDbContext dbContext) 
         {
-            _dbContext = dbContext;
-        }
+            _dbContext = dbContext; 
+        } 
 
-        public IEnumerable<Book> GetAllBooks()
+        public async Task<IEnumerable<Book>> GetAllBooks() 
         {
-            return _dbContext.Books.Include(b => b.Authors).ToList();
-        }
+            return await _dbContext.Books
+                .AsNoTracking()
+                .Include(b => b.Authors)
+                .ToListAsync(); 
+        } 
 
-        public IEnumerable<Book> GetBooksByIds(IEnumerable<Guid> ids)
+        public async Task<IEnumerable<Book>> GetBooksByIds(IEnumerable<Guid> ids) 
         {
-            if (ids == null || !ids.Any())
-                return Enumerable.Empty<Book>();
-            return _dbContext.Books
+            if (ids == null || !ids.Any()) 
+                return Enumerable.Empty<Book>(); 
+            return await _dbContext.Books
+                .AsNoTracking()
                 .Where(a => ids.Contains(a.Id))
-                .ToList();
+                .ToListAsync(); 
         }
 
-        public Book? GetBook(Guid id)
+        public async Task<Book?> GetBook(Guid id) 
         {
-            return _dbContext.Books.Include(b => b.Authors).FirstOrDefault(b => b.Id == id);
+            return await _dbContext.Books
+                .AsNoTracking()
+                .Include(b => b.Authors)
+                .FirstOrDefaultAsync(b => b.Id == id); 
+        } 
+
+        public async Task AddBook(Book book) 
+        {
+            await _dbContext.Books
+                .AddAsync(book); 
+            await _dbContext
+                .SaveChangesAsync(); 
+        } 
+
+        public async Task UpdateBook(Book book) 
+        { 
+            _dbContext.Books
+                .Update(book);
+            await _dbContext
+                .SaveChangesAsync(); 
         }
 
-        public void AddBook(Book book)
+        public async Task DeleteBook(Guid id) 
         {
-            _dbContext.Books.Add(book);
-            _dbContext.SaveChanges();
-        }
-
-        public void UpdateBook(Book book)
-        {
-            _dbContext.Books.Update(book);
-            _dbContext.SaveChanges();
-        }
-
-        public void DeleteBook(Guid id)
-        {
-            var book = _dbContext.Books.Find(id);
-            if (book != null)
-            {
-                _dbContext.Books.Remove(book);
-                _dbContext.SaveChanges();
-            }
-        }
-    }
+            await _dbContext.Books
+                .Where(b => b.Id == id)
+                .ExecuteDeleteAsync(); 
+        } 
+    } 
 }

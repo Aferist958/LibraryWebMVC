@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Library.Domain.Entities;
-using Library.Domain.Interafaces.Repositories;
+using Library.Domain.Interfaces.Repositories;
 using Library.Application.Interfaces.Services;
 using Library.Application.DTOs;
 

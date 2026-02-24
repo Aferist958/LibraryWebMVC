@@ -4,6 +4,7 @@
 # Rider ignored files
 /.idea.LibraryWebMVC.iml
 /modules.xml
+/discord.xml
 /contentModel.xml
 /projectSettingsUpdater.xml
 # Ignored default folder with query files

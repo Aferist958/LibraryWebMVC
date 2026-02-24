@@ -1,5 +1,4 @@
 using MediatR;
-using Library.Domain.Entities;
 
 namespace Library.Application.Books.Commands.CreateBook
 {

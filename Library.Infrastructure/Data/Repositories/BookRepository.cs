@@ -1,19 +1,24 @@
-﻿using Library.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Library.Domain.Entities;
 using Library.Domain.Interfaces.Repositories;
 using Library.Infrastructure.Data.Context;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace Library.Infrastructure.Data.Repositories 
 {
-    public class BookRepository : IBookRepository 
+    public class BookRepository(AppDbContext context)
+        : IBookRepository 
     {
-        private readonly AppDbContext _dbContext; 
-
-        public BookRepository(AppDbContext dbContext) 
+        private readonly AppDbContext _dbContext = context; 
+        
+        public IEnumerable<Book> GetBooksByIds(IEnumerable<Guid> ids) 
         {
-            _dbContext = dbContext; 
-        } 
+            if (ids == null || !ids.Any()) 
+                return Enumerable.Empty<Book>(); 
+            return _dbContext.Books
+                .AsNoTracking()
+                .Where(b => ids.Contains(b.Id))
+                .ToList(); 
+        }
 
         public async Task<IEnumerable<Book>> GetAllBooks() 
         {
@@ -23,13 +28,13 @@ namespace Library.Infrastructure.Data.Repositories
                 .ToListAsync(); 
         } 
 
-        public async Task<IEnumerable<Book>> GetBooksByIds(IEnumerable<Guid> ids) 
+        public async Task<IEnumerable<Book>> GetBooksByIdsAsync(IEnumerable<Guid> ids) 
         {
             if (ids == null || !ids.Any()) 
                 return Enumerable.Empty<Book>(); 
             return await _dbContext.Books
                 .AsNoTracking()
-                .Where(a => ids.Contains(a.Id))
+                .Where(b => ids.Contains(b.Id))
                 .ToListAsync(); 
         }
 

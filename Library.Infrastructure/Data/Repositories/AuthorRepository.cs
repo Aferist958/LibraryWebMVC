@@ -1,18 +1,23 @@
-﻿using Library.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Library.Domain.Entities;
 using Library.Domain.Interfaces.Repositories;
 using Library.Infrastructure.Data.Context;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace Library.Infrastructure.Data.Repositories
 {
-    public class AuthorRepository : IAuthorRepository
+    public class AuthorRepository(AppDbContext context)
+        : IAuthorRepository
     {
-        private readonly AppDbContext _dbContext;
+        private readonly AppDbContext _dbContext = context;
 
-        public AuthorRepository(AppDbContext dbContext)
+        public IEnumerable<Author> GetAuthorsByIds(IEnumerable<Guid> ids)
         {
-            _dbContext = dbContext;
+            if (ids == null || !ids.Any())
+                return Enumerable.Empty<Author>();
+            return _dbContext.Authors
+                .AsNoTracking()
+                .Where(a => ids.Contains(a.Id))
+                .ToList();
         }
 
         public async Task<IEnumerable<Author>> GetAllAuthors()
@@ -23,7 +28,7 @@ namespace Library.Infrastructure.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Author>> GetAuthorsByIds(IEnumerable<Guid> ids)
+        public async Task<IEnumerable<Author>> GetAuthorsByIdsAsync(IEnumerable<Guid> ids)
         {
             if (ids == null || !ids.Any())
                 return Enumerable.Empty<Author>();

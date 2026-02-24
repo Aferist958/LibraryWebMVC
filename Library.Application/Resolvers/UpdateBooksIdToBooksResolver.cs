@@ -1,24 +1,17 @@
 ﻿using AutoMapper;
-using Library.Application.DTOs;
+using Library.Application.Authors.Commands.UpdateAuthor;
 using Library.Domain.Entities;
 using Library.Domain.Interfaces.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Library.Application.Resolvers
 {
-    public class BooksIdToBooksResolver : IValueResolver<AuthorDto, Author, List<Book>>
+    public class UpdateBooksIdToBooksResolver(IBookRepository bookRepository)
+        : IValueResolver<UpdateAuthorCommand, Author, List<Book>>
     {
-        private readonly IBookRepository _bookRepository;
-
-        public BooksIdToBooksResolver(IBookRepository bookRepository)
-        {
-            _bookRepository = bookRepository;
-        }
+        private readonly IBookRepository _bookRepository = bookRepository;
 
         public List<Book> Resolve(
-            AuthorDto source,
+            UpdateAuthorCommand source,
             Author destination,
             List<Book> destMember,
             ResolutionContext context)

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Library.Application.Books.Commands.CreateBook;
+using Library.Application.Books.Commands.UpdateBook;
 using Library.Application.DTOs;
 using Library.Web.ViewModels;
 
@@ -9,7 +11,8 @@ namespace Library.Web.Profiles
         public BookViewProfile()
         {
             CreateMap<BookDto, BookViewModel>();
-            CreateMap<BookViewModel, BookDto>();
+            CreateMap<BookViewModel, CreateBookCommand>();
+            CreateMap<BookViewModel, UpdateBookCommand>();
         }
     }
 }

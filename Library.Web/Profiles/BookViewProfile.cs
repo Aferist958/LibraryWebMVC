@@ -11,6 +11,7 @@ namespace Library.Web.Profiles
         public BookViewProfile()
         {
             CreateMap<BookDto, BookViewModel>();
+            CreateMap<BookDto, UpdateBookCommand>();
             CreateMap<BookViewModel, CreateBookCommand>();
             CreateMap<BookViewModel, UpdateBookCommand>();
         }

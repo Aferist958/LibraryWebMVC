@@ -10,7 +10,8 @@ namespace Library.Application.Authors.Commands.DeleteAuthor
 
         public async Task<Unit> Handle(DeleteAuthorCommand request, CancellationToken cancellationToken)
         {
-            await  _authorRepository.DeleteAuthor(request.Id);
+            await _authorRepository.DeleteAuthor(request.Id);
+            
             return Unit.Value;
         }
     }

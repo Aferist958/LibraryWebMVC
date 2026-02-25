@@ -17,9 +17,6 @@ namespace Library.Application.Profiles
                        .MapFrom(src => src.Books.Select(a => a.Id)));
             CreateMap<Author, AuthorWithBooksDto>();
             CreateMap<CreateAuthorCommand, Author>()
-                // .ForMember(dest => dest.Id,
-                //     opt => opt
-                //         .Ignore())
                 .ForMember(dest => dest.Books,
                     opt => opt
                         .MapFrom<CreateBooksIdToBooksResolver>());

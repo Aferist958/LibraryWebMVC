@@ -14,6 +14,7 @@ namespace Library.Application.Books.Queries.GetBook
         public async Task<BookDto> Handle(GetBookQuery request, CancellationToken cancellationToken)
         {
             var book = await _bookRepository.GetBook(request.Id);
+            
             return _mapper.Map<BookDto>(book);
         }
     }   

@@ -130,8 +130,12 @@ namespace Library.Web.Controllers
                 });
                 if (book.Quantity > 0)
                 {
+                    Console.WriteLine("=============================================================================");
+                    Console.WriteLine(book.Quantity);
                     book.Quantity--;
+                    Console.WriteLine("=============================================================================");
                     UpdateBookCommand updateBookCommand = _mapper.Map<UpdateBookCommand>(book);
+                    Console.WriteLine("=============================================================================");
                     await _mediator.Send(updateBookCommand);
                 }
                 return RedirectToAction("Book");

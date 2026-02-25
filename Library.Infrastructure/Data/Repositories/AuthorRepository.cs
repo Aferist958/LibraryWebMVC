@@ -15,7 +15,6 @@ namespace Library.Infrastructure.Data.Repositories
             if (ids == null || !ids.Any())
                 return Enumerable.Empty<Author>();
             return _dbContext.Authors
-                .AsNoTracking()
                 .Where(a => ids.Contains(a.Id))
                 .ToList();
         }
@@ -33,7 +32,6 @@ namespace Library.Infrastructure.Data.Repositories
             if (ids == null || !ids.Any())
                 return Enumerable.Empty<Author>();
             return await _dbContext.Authors
-                .AsNoTracking()
                 .Where(a => ids.Contains(a.Id))
                 .ToListAsync();
         }
@@ -41,7 +39,6 @@ namespace Library.Infrastructure.Data.Repositories
         public async Task<Author?> GetAuthor(Guid id)
         {
             return await _dbContext.Authors
-                .AsNoTracking()
                 .Include(b => b.Books)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }

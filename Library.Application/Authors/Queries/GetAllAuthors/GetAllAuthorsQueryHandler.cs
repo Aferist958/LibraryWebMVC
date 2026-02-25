@@ -15,6 +15,7 @@ namespace Library.Application.Authors.Queries.GetAllAuthors
             CancellationToken cancellationToken)
         {
             var book = await _authorRepository.GetAllAuthors();
+            
             return _mapper.Map<IEnumerable<AuthorWithBooksDto>>(book);
         }
     }

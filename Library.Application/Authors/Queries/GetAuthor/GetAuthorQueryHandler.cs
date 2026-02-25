@@ -14,6 +14,7 @@ namespace Library.Application.Authors.Queries.GetAuthor
         public async Task<AuthorDto> Handle(GetAuthorQuery request, CancellationToken cancellationToken)
         {
             var book = await _authorRepository.GetAuthor(request.Id);
+            
             return _mapper.Map<AuthorDto>(book);
         }
     }

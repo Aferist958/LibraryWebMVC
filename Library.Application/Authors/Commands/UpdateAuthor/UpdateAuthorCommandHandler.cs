@@ -14,7 +14,7 @@ namespace Library.Application.Authors.Commands.UpdateAuthor
 
         public async Task<Unit> Handle(UpdateAuthorCommand request, CancellationToken cancellationToken)
         {
-            request.Description = request.Description ?? "";
+            request.Description = request.Description ?? string.Empty;
             var author = await _authorRepository.GetAuthor(request.Id);
             if (author == null)
                 throw new NotFoundException(nameof(Author), request.Id);

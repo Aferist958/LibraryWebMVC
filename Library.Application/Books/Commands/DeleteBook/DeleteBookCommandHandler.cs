@@ -11,6 +11,7 @@ namespace Library.Application.Books.Commands.DeleteBook
         public async Task<Unit> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
         {
             await _bookRepository.DeleteBook(request.Id);
+            
             return Unit.Value;
         }
     }

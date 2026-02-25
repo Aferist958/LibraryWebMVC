@@ -1,7 +1,7 @@
 using AutoMapper;
-using Library.Application.Authors.Commands.CreateAuthor;
 using Library.Domain.Entities;
 using Library.Domain.Interfaces.Repositories;
+using Library.Application.Authors.Commands.CreateAuthor;
 
 namespace Library.Application.Resolvers
 {

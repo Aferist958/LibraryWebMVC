@@ -1,9 +1,11 @@
-﻿namespace Library.Application.DTOs
+using MediatR;
+
+namespace Library.Application.Authors.Commands.UpdateAuthor
 {
-    public class AuthorDto
+    public class UpdateAuthorCommand : IRequest<Unit>
     {
         public Guid Id { get; set; }
-
+        
         public string Name { get; set; }
 
         public string? Description { get; set; }

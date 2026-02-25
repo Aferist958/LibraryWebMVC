@@ -1,22 +1,17 @@
 ﻿using AutoMapper;
-using Library.Application.DTOs;
 using Library.Domain.Entities;
-using Library.Domain.Interafaces.Repositories;
+using Library.Domain.Interfaces.Repositories;
+using Library.Application.Books.Commands.CreateBook;
 
 namespace Library.Application.Resolvers
 {
-    public class AuthorsIdToAuthorsResolver
-        : IValueResolver<BookDto, Book, List<Author>>
+    public class CreateAuthorsIdToAuthorsResolver(IAuthorRepository authorRepository)
+        : IValueResolver<CreateBookCommand, Book, List<Author>>
     {
-        private readonly IAuthorRepository _authorRepository;
-
-        public AuthorsIdToAuthorsResolver(IAuthorRepository authorRepository)
-        {
-            _authorRepository = authorRepository;
-        }
+        private readonly IAuthorRepository _authorRepository = authorRepository;
 
         public List<Author> Resolve(
-            BookDto source,
+            CreateBookCommand source,
             Book destination,
             List<Author> destMember,
             ResolutionContext context)

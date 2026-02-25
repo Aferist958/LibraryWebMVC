@@ -1,23 +1,14 @@
-﻿using Library.Domain.Entities;
-using Library.Domain.Interafaces.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using Library.Domain.Entities;
+using Library.Domain.Interfaces.Repositories;
 using Library.Infrastructure.Data.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace Library.Infrastructure.Data.Repositories
 {
-    public class AuthorRepository : IAuthorRepository
+    public class AuthorRepository(AppDbContext context)
+        : IAuthorRepository
     {
-        private AppDbContext _dbContext;
-
-        public AuthorRepository(AppDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
-        public IEnumerable<Author> GetAllAuthors()
-        {
-            return _dbContext.Authors.Include(a => a.Books).ToList();
-        }
+        private readonly AppDbContext _dbContext = context;
 
         public IEnumerable<Author> GetAuthorsByIds(IEnumerable<Guid> ids)
         {
@@ -28,31 +19,51 @@ namespace Library.Infrastructure.Data.Repositories
                 .ToList();
         }
 
-        public Author? GetAuthor(Guid id)
+        public async Task<IEnumerable<Author>> GetAllAuthors()
         {
-            return _dbContext.Authors.Include(b => b.Books).FirstOrDefault(b => b.Id == id);
+            return await _dbContext.Authors
+                .AsNoTracking()
+                .Include(a => a.Books)
+                .ToListAsync();
         }
 
-        public void AddAuthor(Author author)
+        public async Task<IEnumerable<Author>> GetAuthorsByIdsAsync(IEnumerable<Guid> ids)
         {
-            _dbContext.Authors.Add(author);
-            _dbContext.SaveChanges();
+            if (ids == null || !ids.Any())
+                return Enumerable.Empty<Author>();
+            return await _dbContext.Authors
+                .Where(a => ids.Contains(a.Id))
+                .ToListAsync();
         }
 
-        public void UpdateAuthor(Author author)
+        public async Task<Author?> GetAuthor(Guid id)
         {
-            _dbContext.Authors.Update(author);
-            _dbContext.SaveChanges();
+            return await _dbContext.Authors
+                .Include(b => b.Books)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public void DeleteAuthor(Guid id)
+        public async Task AddAuthor(Author author)
         {
-            var author = _dbContext.Authors.Find(id);
-            if (author != null)
-            {
-                _dbContext.Authors.Remove(author);
-                _dbContext.SaveChanges();
-            }
+            await _dbContext.Authors
+                .AddAsync(author);
+            await _dbContext
+                .SaveChangesAsync();
+        }
+
+        public async Task UpdateAuthor(Author author)
+        {
+            _dbContext.Authors
+                .Update(author);
+            await _dbContext
+                .SaveChangesAsync();
+        }
+
+        public async Task DeleteAuthor(Guid id)
+        {
+            await _dbContext.Authors
+                .Where(a => a.Id == id)
+                .ExecuteDeleteAsync();
         }
     }
 }

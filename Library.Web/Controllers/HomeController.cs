@@ -3,12 +3,10 @@ using AutoMapper;
 using Library.Application.Authors.Commands.CreateAuthor;
 using Library.Application.Authors.Commands.DeleteAuthor;
 using Library.Application.Authors.Commands.UpdateAuthor;
-using Library.Domain.Entities;
 using Library.Application.DTOs;
 using Library.Application.Interfaces.Services;
 using Library.Application.Authors.Queries.GetAllAuthors;
 using Library.Application.Books.Queries.GetAllBooks;
-using Library.Application.Authors.Queries.GetAllAuthors;
 using Library.Application.Authors.Queries.GetAuthor;
 using Library.Application.Books.Commands.CreateBook;
 using Library.Application.Books.Commands.UpdateBook;
@@ -19,11 +17,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Library.Web.Controllers
 {
-    public class HomeController(IMapper mapper, IMediator mediator)
+    public class HomeController(IBookService bookService, IAuthorService authorService, IMapper mapper, IMediator mediator)
         : Controller
     {
-        // private readonly IBookService _bookService;
-        // private readonly IAuthorService _authorService;
+        private readonly IBookService _bookService = bookService;
+        private readonly IAuthorService _authorService = authorService;
         private readonly IMapper _mapper = mapper;
         private readonly IMediator _mediator = mediator;
         
@@ -33,30 +31,13 @@ namespace Library.Web.Controllers
             try
             {
                 ViewBag.Search = search;
-                List<BookWithAuthorsDto> searchResult = new List<BookWithAuthorsDto>();
                 IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
                 IEnumerable<AuthorWithBooksDto> authors = await  _mediator.Send(new GetAllAuthorsQuery());
-
-                if (!string.IsNullOrEmpty(search))
-                {
-                        searchResult.AddRange(books
-                            .Where(b => b.Title
-                            .Contains(search, StringComparison.OrdinalIgnoreCase)));
-                        searchResult.AddRange(books
-                            .Where(b => b.Authors
-                            .Any(a => a.Name
-                            .Contains(search))));
-                        if (int.TryParse(search, out int year))
-                        {
-                            searchResult.AddRange(books
-                                .Where(b => b.YearOfPublication == year));
-                        }
-                        searchResult = searchResult
-                            .DistinctBy(b => b.Id)
-                            .ToList();
-                }
+                List<BookWithAuthorsDto> searchResult = await _bookService.SearchBooksService(search, books);
+                
                 BookManagementViewModel viewModel = new BookManagementViewModel()
                     { Books = searchResult, Authors = authors };
+                
                 return View("Book", viewModel);
             }
             catch
@@ -80,7 +61,9 @@ namespace Library.Web.Controllers
                 }
                 IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
                 IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
+                
                 BookManagementViewModel viewModel = new BookManagementViewModel() { Books = books, Authors = authors };
+                
                 return View(viewModel);
             }
             catch
@@ -128,16 +111,8 @@ namespace Library.Web.Controllers
                 {
                     Id = id
                 });
-                if (book.Quantity > 0)
-                {
-                    Console.WriteLine("=============================================================================");
-                    Console.WriteLine(book.Quantity);
-                    book.Quantity--;
-                    Console.WriteLine("=============================================================================");
-                    UpdateBookCommand updateBookCommand = _mapper.Map<UpdateBookCommand>(book);
-                    Console.WriteLine("=============================================================================");
-                    await _mediator.Send(updateBookCommand);
-                }
+                await _bookService.IssueBook(book);
+                
                 return RedirectToAction("Book");
             }
             catch
@@ -155,9 +130,8 @@ namespace Library.Web.Controllers
                 {
                     Id = id
                 });
-                book.Quantity++;
-                UpdateBookCommand updateBookCommand = _mapper.Map<UpdateBookCommand>(book);
-                await _mediator.Send(updateBookCommand);
+                await _bookService.ReturnBook(book);
+                
                 return RedirectToAction("Book");
             }
             catch
@@ -172,32 +146,12 @@ namespace Library.Web.Controllers
             try
             {
                 ViewBag.Search = search;
-                List<AuthorWithBooksDto> searchResult = new List<AuthorWithBooksDto>();
                 IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
                 IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
-                if (!string.IsNullOrEmpty(search))
-                {
-                    searchResult.AddRange(authors
-                        .Where(a => a.Name
-                        .Contains(search, StringComparison.OrdinalIgnoreCase)));
-                    searchResult.AddRange(authors
-                        .Where(a => a.Description
-                        .Contains(search, StringComparison.OrdinalIgnoreCase)));
-                    searchResult.AddRange(authors
-                        .Where(a => a.Books
-                        .Any(b => b.Title
-                        .Contains(search))));
-                    if (int.TryParse(search, out int year))
-                    {
-                        searchResult.AddRange(authors
-                            .Where(a => a.Books
-                            .Any(b => b.YearOfPublication == year)));
-                    }
-                    searchResult = searchResult
-                        .DistinctBy(a => a.Id)
-                        .ToList();
-                }
+                List<AuthorWithBooksDto> searchResult = await _authorService.SearchAuthorsService(search, authors);
+                
                 AuthorManagementViewModel viewModel = new AuthorManagementViewModel() { Books = books, Authors = searchResult };
+                
                 return View("Author", viewModel);
             }
             catch
@@ -223,7 +177,9 @@ namespace Library.Web.Controllers
                 }
                 IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
                 IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
+                
                 AuthorManagementViewModel viewModel = new AuthorManagementViewModel() { Books = books, Authors = authors };
+                
                 return View(viewModel);
             }
             catch

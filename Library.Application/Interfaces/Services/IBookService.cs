@@ -5,10 +5,8 @@ namespace Library.Application.Interfaces.Services
 {
     public interface IBookService
     {
-        IEnumerable<Book> GetAllBooks();
-        BookDto? GetBook(Guid id);
-        void AddBook(BookDto dto);
-        void UpdateBook(BookDto dto);
-        void DeleteBook(Guid id);
+        Task<List<BookWithAuthorsDto>> SearchBooksService(string search, IEnumerable<BookWithAuthorsDto> books);
+        Task IssueBook(BookDto book);
+        Task ReturnBook(BookDto book);
     }
 }

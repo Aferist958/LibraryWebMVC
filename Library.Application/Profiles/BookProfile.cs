@@ -24,7 +24,7 @@ namespace Library.Application.Profiles
                .ForMember(dest => dest.Authors,
                    opt => opt
                        .MapFrom<UpdateAuthorsIdToAuthorsResolver>());
-            
+            CreateMap<BookDto, UpdateBookCommand>();
         }
     }
 }

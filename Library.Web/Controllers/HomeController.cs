@@ -17,205 +17,160 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Library.Web.Controllers
 {
-    public class HomeController(IBookService bookService, IAuthorService authorService, IMapper mapper, IMediator mediator)
+    public class HomeController(
+        IBookService bookService,
+        IAuthorService authorService,
+        IMapper mapper,
+        IMediator mediator)
         : Controller
     {
         private readonly IBookService _bookService = bookService;
         private readonly IAuthorService _authorService = authorService;
         private readonly IMapper _mapper = mapper;
         private readonly IMediator _mediator = mediator;
-        
+
         [HttpPost]
         public async Task<IActionResult> SearchBook(string search)
         {
-            try
-            {
-                ViewBag.Search = search;
-                IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
-                IEnumerable<AuthorWithBooksDto> authors = await  _mediator.Send(new GetAllAuthorsQuery());
-                List<BookWithAuthorsDto> searchResult = await _bookService.SearchBooksService(search, books);
-                
-                BookManagementViewModel viewModel = new BookManagementViewModel()
-                    { Books = searchResult, Authors = authors };
-                
-                return View("Book", viewModel);
-            }
-            catch
-            {
-                return RedirectToAction("Error", "Home");
-            }
+            ViewBag.Search = search;
+            IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
+            IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
+            List<BookWithAuthorsDto> searchResult = await _bookService.SearchBooksService(search, books);
+
+            BookManagementViewModel viewModel = new BookManagementViewModel()
+                { Books = searchResult, Authors = authors };
+
+            return View("Book", viewModel);
+            return RedirectToAction("Error", "Home");
         }
 
         [HttpGet]
         public async Task<IActionResult> Book(Guid? id)
         {
-            try
+            if (id.HasValue)
             {
-                if (id.HasValue)
+                BookDto book = await _mediator.Send(new GetBookQuery
                 {
-                    BookDto book = await _mediator.Send(new GetBookQuery {
-                        Id = id.Value
-                    });
+                    Id = id.Value
+                });
 
-                    return Json(book);
-                }
-                IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
-                IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
-                
-                BookManagementViewModel viewModel = new BookManagementViewModel() { Books = books, Authors = authors };
-                
-                return View(viewModel);
+                return Json(book);
             }
-            catch
-            {
-                return RedirectToAction("Error", "Home");
-            }
+
+            IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
+            IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
+
+            BookManagementViewModel viewModel = new BookManagementViewModel() { Books = books, Authors = authors };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         public async Task<IActionResult> Book(BookViewModel book, Guid? id)
         {
-            try
+            if (id.HasValue)
             {
-                if (id.HasValue)
+                await _mediator.Send(new DeleteBookCommand()
                 {
-                    await _mediator.Send(new DeleteBookCommand()
-                    {
-                        Id = id.Value
-                    });
-                }
-                else if (book.Id == Guid.Empty)
-                {
-                    CreateBookCommand createBookCommand = _mapper.Map<CreateBookCommand>(book);
-                    await _mediator.Send(createBookCommand);
-                }
-                else
-                {
-                    UpdateBookCommand updateBookCommand = _mapper.Map<UpdateBookCommand>(book);
-                    await _mediator.Send(updateBookCommand);
-                }
-                return RedirectToAction("Book");
+                    Id = id.Value
+                });
             }
-            catch
+            else if (book.Id == Guid.Empty)
             {
-                return RedirectToAction("Error", "Home");
+                CreateBookCommand createBookCommand = _mapper.Map<CreateBookCommand>(book);
+                await _mediator.Send(createBookCommand);
             }
+            else
+            {
+                UpdateBookCommand updateBookCommand = _mapper.Map<UpdateBookCommand>(book);
+                await _mediator.Send(updateBookCommand);
+            }
+
+            return RedirectToAction("Book");
         }
 
         [HttpPost]
         public async Task<IActionResult> IssueBook(Guid id)
         {
-            try
+            BookDto book = await _mediator.Send(new GetBookQuery()
             {
-                BookDto book = await _mediator.Send(new GetBookQuery()
-                {
-                    Id = id
-                });
-                await _bookService.IssueBook(book);
-                
-                return RedirectToAction("Book");
-            }
-            catch
-            {
-                return RedirectToAction("Error", "Home");
-            }
+                Id = id
+            });
+            await _bookService.IssueBook(book);
+
+            return RedirectToAction("Book");
         }
 
         [HttpPost]
         public async Task<IActionResult> ReturnBook(Guid id)
         {
-            try
+            BookDto book = await _mediator.Send(new GetBookQuery()
             {
-                BookDto book = await _mediator.Send(new GetBookQuery()
-                {
-                    Id = id
-                });
-                await _bookService.ReturnBook(book);
-                
-                return RedirectToAction("Book");
-            }
-            catch
-            {
-                return RedirectToAction("Error", "Home");
-            }
+                Id = id
+            });
+            await _bookService.ReturnBook(book);
+
+            return RedirectToAction("Book");
         }
 
         [HttpPost]
         public async Task<IActionResult> SearchAuthor(string search)
         {
-            try
-            {
-                ViewBag.Search = search;
-                IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
-                IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
-                List<AuthorWithBooksDto> searchResult = await _authorService.SearchAuthorsService(search, authors);
-                
-                AuthorManagementViewModel viewModel = new AuthorManagementViewModel() { Books = books, Authors = searchResult };
-                
-                return View("Author", viewModel);
-            }
-            catch
-            {
-                return RedirectToAction("Error", "Home");
-            }
+            ViewBag.Search = search;
+            IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
+            IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
+            List<AuthorWithBooksDto> searchResult = await _authorService.SearchAuthorsService(search, authors);
+
+            AuthorManagementViewModel viewModel = new AuthorManagementViewModel()
+                { Books = books, Authors = searchResult };
+
+            return View("Author", viewModel);
         }
-          
+
 
         [HttpGet]
         public async Task<IActionResult> Author(Guid? id)
         {
-            try
+            if (id.HasValue)
             {
-                if (id.HasValue)
+                AuthorDto author = await _mediator.Send(new GetAuthorQuery()
                 {
-                    AuthorDto author = await _mediator.Send(new GetAuthorQuery()
-                    {
-                        Id = id.Value
-                    });
+                    Id = id.Value
+                });
 
-                    return Json(author);
-                }
-                IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
-                IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
-                
-                AuthorManagementViewModel viewModel = new AuthorManagementViewModel() { Books = books, Authors = authors };
-                
-                return View(viewModel);
+                return Json(author);
             }
-            catch
-            {
-                return RedirectToAction("Error", "Home");
-            }
+
+            IEnumerable<BookWithAuthorsDto> books = await _mediator.Send(new GetAllBooksQuery());
+            IEnumerable<AuthorWithBooksDto> authors = await _mediator.Send(new GetAllAuthorsQuery());
+
+            AuthorManagementViewModel viewModel = new AuthorManagementViewModel() { Books = books, Authors = authors };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         public async Task<IActionResult> Author(AuthorViewModel author, Guid? id)
         {
-            try
+            if (id.HasValue)
             {
-                if (id.HasValue)
+                await _mediator.Send(new DeleteAuthorCommand()
                 {
-                    await _mediator.Send(new DeleteAuthorCommand()
-                    {
-                        Id = id.Value
-                    });
-                }
-                else if (author.Id == Guid.Empty)
-                {
-                    CreateAuthorCommand createAuthorCommand = _mapper.Map<CreateAuthorCommand>(author);
-                    await _mediator.Send(createAuthorCommand);
-                }
-                else
-                {
-                    UpdateAuthorCommand updateAuthorCommand = _mapper.Map<UpdateAuthorCommand>(author);
-                    await _mediator.Send(updateAuthorCommand);
-                }
-                return RedirectToAction("Author");
+                    Id = id.Value
+                });
             }
-            catch
+            else if (author.Id == Guid.Empty)
             {
-                return RedirectToAction("Error", "Home");
+                CreateAuthorCommand createAuthorCommand = _mapper.Map<CreateAuthorCommand>(author);
+                await _mediator.Send(createAuthorCommand);
             }
+            else
+            {
+                UpdateAuthorCommand updateAuthorCommand = _mapper.Map<UpdateAuthorCommand>(author);
+                await _mediator.Send(updateAuthorCommand);
+            }
+
+            return RedirectToAction("Author");
         }
 
         public IActionResult Error()

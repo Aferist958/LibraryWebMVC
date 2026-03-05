@@ -29,9 +29,7 @@ namespace Library.Infrastructure.Data.Context
             DotEnv.Load();
             
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            Console.WriteLine("============================================================================================================");
-            Console.WriteLine(Environment.GetEnvironmentVariable("DB_CONNECTION"));
-            Console.WriteLine("============================================================================================================");
+
             optionsBuilder.UseNpgsql(
                 Environment.GetEnvironmentVariable("DB_CONNECTION"));
 

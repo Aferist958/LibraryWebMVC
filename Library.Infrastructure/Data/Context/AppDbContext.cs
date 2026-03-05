@@ -1,4 +1,5 @@
-﻿using Library.Domain.Entities;
+﻿using dotenv.net;
+using Library.Domain.Entities;
 using Library.Infrastructure.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -25,10 +26,14 @@ namespace Library.Infrastructure.Data.Context
     {
         public AppDbContext CreateDbContext(string[] args)
         {
+            DotEnv.Load();
+            
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-
+            Console.WriteLine("============================================================================================================");
+            Console.WriteLine(Environment.GetEnvironmentVariable("DB_CONNECTION"));
+            Console.WriteLine("============================================================================================================");
             optionsBuilder.UseNpgsql(
-                "Host=localhost;Port=5432;Database=LibraryDb;Username=postgres;Password=postgres;TrustServerCertificate=True");
+                Environment.GetEnvironmentVariable("DB_CONNECTION"));
 
             return new AppDbContext(optionsBuilder.Options);
         }

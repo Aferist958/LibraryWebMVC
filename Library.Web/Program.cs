@@ -34,6 +34,12 @@ app.MapControllerRoute(
     pattern: "{action=Book}/{id?}",
     defaults: new { controller = "Home" });
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

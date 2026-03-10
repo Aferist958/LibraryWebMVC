@@ -39,7 +39,7 @@ namespace Library.Web.CustomTagHelper
                         var items = enumerable.Cast<object>().Select(x => x?.ToString() ?? "");
                         value = string.Join(", ", items);
                     }
-                    td.InnerHtml.AppendHtml(value?.ToString() ?? string.Empty);
+                    td.InnerHtml.Append(value?.ToString() ?? string.Empty);
                     row.InnerHtml.AppendHtml(td);
                 }
                 tbody.InnerHtml.AppendHtml(row);

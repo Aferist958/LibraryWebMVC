@@ -30,6 +30,7 @@ namespace Library.Web.Controllers
         private readonly IMediator _mediator = mediator;
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SearchBook(string search)
         {
             ViewBag.Search = search;
@@ -66,6 +67,7 @@ namespace Library.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Book(BookViewModel book, Guid? id)
         {
             if (id.HasValue)
@@ -90,6 +92,7 @@ namespace Library.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> IssueBook(Guid id)
         {
             BookDto book = await _mediator.Send(new GetBookQuery()
@@ -102,6 +105,7 @@ namespace Library.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReturnBook(Guid id)
         {
             BookDto book = await _mediator.Send(new GetBookQuery()
@@ -114,6 +118,7 @@ namespace Library.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SearchAuthor(string search)
         {
             ViewBag.Search = search;
@@ -150,6 +155,7 @@ namespace Library.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Author(AuthorViewModel author, Guid? id)
         {
             if (id.HasValue)

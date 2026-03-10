@@ -51,7 +51,6 @@ function loadAuthorData(authorId) {
             return response.json();
         })
         .then(data => {
-            console.log(data);
             document.getElementById('updateAuthorId').value = data.id;
             document.getElementById('updateAuthorName').value = data.name || "";
             document.getElementById('updateAuthorDescription').value = data.description || "";
@@ -61,9 +60,7 @@ function loadAuthorData(authorId) {
                 Array.from(booksSelect.options).forEach(option => {
                     option.selected = false;
                 });
-                console.log("Yes");
                 data.booksId.forEach(bookId => {
-                    console.log("sa");
                     const option = booksSelect.querySelector(`option[value="${bookId}"]`);
                     if (option) {
                         option.selected = true;
